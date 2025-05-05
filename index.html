@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>520</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f1934c;
+        font-family: "Tiny5", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      #game-container {
+        border: 10px solid #dc4926;
+        background-color: #2a2a41;
+        width: 400px;
+        height: 400px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .character {
+        position: absolute;
+        bottom: 0;
+        width: 80px;
+        height: 80px;
+        background: url("character.png") no-repeat center / contain;
+      }
+
+      .item {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+      }
+
+      .heart-red {
+        background: url("red-heart.png") no-repeat center / contain;
+      }
+
+      .heart-blue {
+        background: url("blue-heart.png") no-repeat center / contain;
+      }
+
+      .coffee {
+        background: url("coffee.png") no-repeat center / contain;
+      }
+
+      #controls {
+        margin-top: 10px;
+        display: flex;
+        gap: 20px;
+      }
+
+      .game-button {
+        width: 63px;
+        height: 55px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        border: none;
+        cursor: pointer;
+        background-color: transparent;
+      }
+
+      .game-button.left {
+        background-image: url("btn-left.png");
+      }
+
+      .game-button.left:hover {
+        background-image: url("btn-left-hover.png");
+      }
+
+      .game-button.right {
+        background-image: url("btn-right.png");
+      }
+
+      .game-button.right:hover {
+        background-image: url("btn-right-hover.png");
+      }
+
+      #score {
+        margin-top: 10px;
+        font-size: 30px;
+        color: white;
+      }
+
+      #message1,
+      #message2 {
+        color: #2a2a41d0;
+        text-align: center;
+      }
+
+      #message1 {
+        font-size: 40px;
+        font-weight: bold;
+      }
+
+      #message2 {
+        margin-top: 10px;
+        font-size: 20px;
+        font-family: "Sour Gummy", sans-serif;
+      }
+
+      #message-container {
+        position: relative;
+        background-color: #feffe5;
+        border: 8px solid;
+        margin: 10px;
+        margin-top: 15px;
+        padding: 15px;
+        visibility: hidden;
+      }
+
+      @media (max-width: 400px) {
+        #game-container {
+          width: 90vw;
+          height: 90vw;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="bg-music" src="all-my-loving.mp3" loop></audio>
+    <div id="game-container">
+      <div class="character" id="character" style="left: 130px"></div>
+    </div>
+    <div id="score">Score: 0</div>
+    <div id="controls">
+      <button class="game-button left" onclick="moveLeft()"></button>
+      <button class="game-button right" onclick="moveRight()"></button>
+    </div>
+    <div id="message-container">
+      <div id="message1"></div>
+      <div id="message2"></div>
+    </div>
+
+    <script>
+      const character = document.getElementById("character");
+      const game = document.getElementById("game-container");
+      const scoreEl = document.getElementById("score");
+      const message1 = document.getElementById("message1");
+      const message2 = document.getElementById("message2");
+      const messageContainer = document.getElementById("message-container");
+      const bgMusic = document.getElementById("bg-music");
+      bgMusic.volume = 0.07;
+
+      let characterX = 130;
+      let speed = 10;
+      let score = 0;
+      let isPlaying = true;
+      let missedRedHearts = 0;
+      const maxMissedRedHearts = 3;
+      let musicStarted = false;
+
+      function startMusicOnce() {
+        if (!musicStarted) {
+          bgMusic.play();
+          musicStarted = true;
+        }
+      }
+
+      function moveLeft() {
+        if (!isPlaying) return;
+        startMusicOnce();
+        characterX = Math.max(0, characterX - speed);
+        character.style.left = characterX + "px";
+      }
+
+      function moveRight() {
+        if (!isPlaying) return;
+        startMusicOnce();
+        characterX = Math.min(game.clientWidth - 40, characterX + speed);
+        character.style.left = characterX + "px";
+      }
+
+      function spawnItem() {
+        if (!isPlaying) return;
+
+        const item = document.createElement("div");
+        item.classList.add("item");
+        const types = [
+          "heart-red",
+          "heart-blue",
+          "heart-red",
+          "heart-blue",
+          "heart-red",
+          "coffee",
+        ];
+        const type = types[Math.floor(Math.random() * types.length)];
+        item.classList.add(type);
+        item.classList.add("falling");
+        item.style.left =
+          Math.floor(Math.random() * (game.clientWidth - 30)) + "px";
+        item.style.top = "0px";
+        game.appendChild(item);
+
+        let interval = setInterval(() => {
+          if (!isPlaying) {
+            clearInterval(interval);
+            return;
+          }
+
+          const top = parseInt(item.style.top);
+          item.style.top = top + 5 + "px";
+
+          if (top > game.clientHeight - 50) {
+            const itemX = parseInt(item.style.left);
+            if (itemX + 30 > characterX && itemX < characterX + 40) {
+              game.removeChild(item);
+              clearInterval(interval);
+              handleItem(type);
+            } else if (top > game.clientHeight) {
+              game.removeChild(item);
+              clearInterval(interval);
+
+              if (type === "heart-red") {
+                missedRedHearts++;
+                if (missedRedHearts >= maxMissedRedHearts) {
+                  endGame(score >= 1 ? true : false);
+                }
+              }
+            }
+          }
+        }, 50);
+      }
+
+      function handleItem(type) {
+        if (type === "heart-red") {
+          score++;
+        } else if (type === "heart-blue") {
+          score--;
+        } else if (type === "coffee") {
+          speed = 20;
+          setTimeout(() => (speed = 10), 3000); // speed boost 3 sec
+        }
+
+        scoreEl.textContent = "Score: " + score;
+      }
+
+      function endGame(won) {
+        isPlaying = false;
+        messageContainer.style.visibility = "visible";
+        messageContainer.style.borderColor = won ? "#ff82a0" : "#82acff";
+        message1.style.color = won ? "#ff82a0" : "#82acff";
+        message1.textContent = won
+          ? "You won my heart!"
+          : "Sorry, but you lost...";
+        message2.textContent = won
+          ? "your prize is a free valentine's date with me ✨"
+          : "just a few more cups of coffee, and you’ll be there!";
+      }
+
+      setInterval(spawnItem, 1000);
+    </script>
+  </body>
+</html>
