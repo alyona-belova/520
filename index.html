@@ -261,6 +261,8 @@
         message2.textContent = won
           ? "your prize is a free valentine's date with me ✨"
           : "just a few more cups of coffee, and you’ll be there!";
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
       }
 
       setInterval(spawnItem, 1000);
