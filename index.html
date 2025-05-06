@@ -221,10 +221,16 @@
 
           const top = parseInt(item.style.top);
           item.style.top = top + 5 + "px";
+          const itemRect = item.getBoundingClientRect();
+          const charRect = character.getBoundingClientRect();
 
           if (top > game.clientHeight - 50) {
             const itemX = parseInt(item.style.left);
-            if (itemX + 30 > characterX && itemX < characterX + 40) {
+            if (
+              itemRect.bottom >= charRect.top &&
+              itemRect.left < charRect.right &&
+              itemRect.right > charRect.left
+            ) {
               game.removeChild(item);
               clearInterval(interval);
               handleItem(type);
