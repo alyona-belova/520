@@ -12,6 +12,10 @@
       href="https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap"
+      rel="stylesheet"
+    />
     <style>
       body {
         background-color: #f1934c;
@@ -97,6 +101,12 @@
         color: white;
       }
 
+      #missed {
+        font-family: "Gamja Flower", sans-serif;
+        font-size: 30px;
+        color: white;
+      }
+
       #message1,
       #message2 {
         color: #2a2a41d0;
@@ -138,6 +148,7 @@
       <div class="character" id="character" style="left: 130px"></div>
     </div>
     <div id="score">Score: 0</div>
+    <div id="missed">♥♥♥♥</div>
     <div id="controls">
       <button class="game-button left" onclick="moveLeft()"></button>
       <button class="game-button right" onclick="moveRight()"></button>
@@ -228,6 +239,7 @@
 
               if (type === "heart-red") {
                 missedRedHearts++;
+                updateMissedDisplay();
                 if (missedRedHearts >= maxMissedRedHearts) {
                   endGame(score >= 1 ? true : false);
                 }
@@ -235,6 +247,13 @@
             }
           }
         }, 50);
+      }
+
+      function updateMissedDisplay() {
+        const total = maxMissedRedHearts;
+        const missed = missedRedHearts;
+        const hearts = "♥".repeat(total - missed) + "♡".repeat(missed);
+        document.getElementById("missed").textContent = hearts;
       }
 
       function handleItem(type) {
@@ -260,7 +279,7 @@
           : "Sorry, but you lost...";
         message2.textContent = won
           ? "your prize is a free valentine's date with me"
-          : "just a few more cups of coffee, and you’ll be there!";
+          : "just a few more cups of coffee, and you'll get there!";
         bgMusic.pause();
         bgMusic.currentTime = 0;
       }
