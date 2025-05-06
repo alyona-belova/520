@@ -12,10 +12,6 @@
       href="https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap"
-      rel="stylesheet"
-    />
     <style>
       body {
         background-color: #f1934c;
@@ -102,8 +98,7 @@
       }
 
       #missed {
-        font-family: "Gamja Flower", sans-serif;
-        font-size: 30px;
+        font-size: 25px;
         color: white;
       }
 
@@ -148,7 +143,7 @@
       <div class="character" id="character" style="left: 130px"></div>
     </div>
     <div id="score">Score: 0</div>
-    <div id="missed">♥♥♥♥</div>
+    <div id="missed">ΟΟΟΟ</div>
     <div id="controls">
       <button class="game-button left" onclick="moveLeft()"></button>
       <button class="game-button right" onclick="moveRight()"></button>
@@ -252,7 +247,7 @@
       function updateMissedDisplay() {
         const total = maxMissedRedHearts;
         const missed = missedRedHearts;
-        const hearts = "♥".repeat(total - missed) + "♡".repeat(missed);
+        const hearts = "Ο".repeat(total - missed) + "Θ".repeat(missed);
         document.getElementById("missed").textContent = hearts;
       }
 
